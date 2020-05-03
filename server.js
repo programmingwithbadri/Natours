@@ -13,6 +13,10 @@ const tours = JSON.parse(
   fs.readFileSync(path.join(__dirname, '/dev-data/data/tours-simple.json'))
 );
 
+const users = JSON.parse(
+  fs.readFileSync(path.join(__dirname, '/dev-data/data/users.json'))
+);
+
 // Route handlers
 const getTours = (req, res) => {
   res.status(200).json({
@@ -90,9 +94,97 @@ const deleteTour = (req, res) => {
   // To be updated
   res.status(204).send();
 };
+
+const getUsers = (req, res) => {
+  res.status(200).json({
+    status: 'success',
+    results: users.length,
+    data: {
+      users,
+    },
+  });
+};
+
+const getUser = (req, res) => {
+  const id = req.params.id * 1;
+  if (id > users.length) {
+    res.status(404).json({
+      status: 'fail',
+      message: 'Invalid ID',
+    });
+  }
+  const user = users.find((user) => user.id === id);
+  res.status(200).json({
+    status: 'success',
+    data: {
+      user,
+    },
+  });
+};
+
+const createUser = (req, res) => {
+  const newId = users[users.length - 1].id + 1;
+  const newUser = Object.assign({ id: newId }, req.body);
+
+  users.push(newUser);
+  fs.writeFile(
+    path.join(__dirname, '/dev-data/data/users.json'),
+    JSON.stringify(users),
+    () => {
+      res.status(201).json({
+        status: 'success',
+        data: {
+          tour: newUser,
+        },
+      });
+    }
+  );
+};
+
+const updateUser = (req, res) => {
+  const id = req.params.id * 1;
+  if (id > users.length) {
+    res.status(404).json({
+      status: 'fail',
+      message: 'Invalid ID',
+    });
+  }
+
+  // To be updated
+  res.status(200).json({
+    status: 'success',
+    data: {
+      user: 'Updated tour',
+    },
+  });
+};
+
+const deleteUser = (req, res) => {
+  const id = req.params.id * 1;
+  if (id > users.length) {
+    res.status(404).json({
+      status: 'fail',
+      message: 'Invalid ID',
+    });
+  }
+
+  // To be updated
+  res.status(204).send();
+};
 // Routes
 app.route('/api/v1/tours').get(getTours).post(createTour);
-app.route('/api/v1/tours/:id').patch(updateTour).delete(deleteTour);
+app
+  .route('/api/v1/tours/:id')
+  .get(getTour)
+  .patch(updateTour)
+  .delete(deleteTour);
+
+app.route('/api/v1/users').get(getUsers).post(createUser);
+app
+  .route('/api/v1/tours/:id')
+  .get(getUser)
+  .patch(updateUser)
+  .delete(deleteUser);
 
 const port = process.env.PORT || 3000;
 
