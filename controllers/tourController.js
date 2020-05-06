@@ -2,8 +2,7 @@ const Tour = require('../models/Tour');
 
 exports.getTours = async (req, res) => {
   try {
-    const tours = Tour.find();
-
+    const tours = await Tour.find();
     // SEND RESPONSE
     res.status(200).json({
       status: 'success',
