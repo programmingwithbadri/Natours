@@ -99,11 +99,26 @@ tourSchema.pre('save', function (next) {
 // Any queries that start with find, below middleware will be called,
 // /^find/ - regex
 tourSchema.pre(/^find/, function (next) {
+  // find the tours that doesnt have secretTour as true
   this.find({
     secretTour: {
       $ne: true
     }
   });
+  next();
+});
+
+// AGGREGATION MIDDLEWARE
+tourSchema.pre('aggregate', function (next) {
+  // Remove the documents that have secretTour as true while aggregating
+  this.pipeline().unshift({
+    $match: {
+      secretTour: {
+        $ne: true
+      }
+    }
+  });
+
   next();
 });
 
