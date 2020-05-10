@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const slugify = require('slugify'); // used for SEO purposes
 
 const tourSchema = new mongoose.Schema({
   name: {
@@ -9,6 +10,7 @@ const tourSchema = new mongoose.Schema({
     maxlength: [40, 'A tour name must have less or equal then 40 characters'],
     minlength: [10, 'A tour name must have more or equal then 10 characters']
   },
+  slug: String, // SEO field
   duration: {
     type: Number,
     required: [true, 'A tour must have a duration']
@@ -66,7 +68,7 @@ const tourSchema = new mongoose.Schema({
   toJSON: {
     // mentioning when the data is converted toJson
     // we need to include the virtual props as well(eg-durationWeeks)
-    virtuals: true 
+    virtuals: true
   },
   toObject: {
     virtuals: true
@@ -79,6 +81,14 @@ tourSchema.virtual('durationWeeks').get(function () {
   // this will be pointing to mongoose record
   // so this.duration will be the duration from each record
   return this.duration / 7;
+});
+
+// DOCUMENT MIDDLEWARE: runs before .save() and .create()
+tourSchema.pre('save', function (next) {
+  this.slug = slugify(this.name, {
+    lower: true
+  }); // stores the human readable format of this.name value
+  next();
 });
 
 const Tour = mongoose.model('Tour', tourSchema);
