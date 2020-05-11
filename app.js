@@ -3,6 +3,11 @@ const morgan = require('morgan');
 
 const userRouter = require('./routes/userRoutes');
 const tourRouter = require('./routes/tourRoutes');
+
+const globalErrorHandler = require('./controllers/errorController');
+
+const AppError = require('./utils/appError');
+
 const app = express();
 
 // Middleware
@@ -17,12 +22,12 @@ app.use(express.static(`${__dirname}/public`));
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/tours', tourRouter);
 
-// When none of the routes match,
+// When none of the routes match, throw 404
 app.all('*', (req, res, next) => {
-  res.status(404).send({
-    status: 'fail',
-    message: `Can't find ${req.originalUrl} on this server!`
-  });
-})
+  next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
+});
+
+// Use the global error handler
+app.use(globalErrorHandler);
 
 module.exports = app;
