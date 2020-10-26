@@ -36,12 +36,9 @@ const reviewSchema = new mongoose.Schema(
 
 // QUERY MIDDLEWARE
 // Any queries that start with find, below middleware will be called,
-// Populate the user's name and photo and tour name in the review model
+// Populate the user's name and photo data in the tour model
 reviewSchema.pre(/^find/, function (next) {
   this.populate({
-    path: 'tour',
-    select: 'name',
-  }).populate({
     path: 'user',
     select: 'name photo',
   });

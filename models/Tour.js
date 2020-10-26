@@ -127,6 +127,13 @@ tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
 });
 
+// Virtual populate
+tourSchema.virtual('reviews', {
+  ref: 'Review',
+  foreignField: 'tour', // Field name of Review model
+  localField: '_id', // Equivalent field in current model
+});
+
 // DOCUMENT MIDDLEWARE: runs before .save() and .create()
 tourSchema.pre('save', function (next) {
   this.slug = slugify(this.name, {
@@ -148,11 +155,11 @@ tourSchema.pre(/^find/, function (next) {
   next();
 });
 
-// Populate tour guides data in the tour model 
-tourSchema.pre(/^find/, function(next) {
+// Populate tour guides data in the tour model
+tourSchema.pre(/^find/, function (next) {
   this.populate({
     path: 'guides',
-    select: '-__v -passwordChangedAt' // '-' means remove the fields
+    select: '-__v -passwordChangedAt', // '-' means remove the fields
   });
 
   next();
