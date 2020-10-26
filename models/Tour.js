@@ -148,6 +148,16 @@ tourSchema.pre(/^find/, function (next) {
   next();
 });
 
+// Populate tour guides data in the tour model 
+tourSchema.pre(/^find/, function(next) {
+  this.populate({
+    path: 'guides',
+    select: '-__v -passwordChangedAt' // '-' means remove the fields
+  });
+
+  next();
+});
+
 // AGGREGATION MIDDLEWARE
 tourSchema.pre('aggregate', function (next) {
   // Remove the documents that have secretTour as true while aggregating
