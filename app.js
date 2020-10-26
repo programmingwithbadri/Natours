@@ -10,6 +10,7 @@ const hpp = require('hpp');
 
 const userRouter = require('./routes/userRoutes');
 const tourRouter = require('./routes/tourRoutes');
+const reviewsRouter = require('./routes/reviewRoutes');
 
 const globalErrorHandler = require('./controllers/errorController');
 
@@ -30,16 +31,18 @@ if (process.env.NODE_ENV === 'development') {
 const limiter = rateLimit({
   max: 100,
   windowMs: 60 * 60 * 1000,
-  message: 'Too many requests from this IP, please try again in an hour!'
+  message: 'Too many requests from this IP, please try again in an hour!',
 });
 
 app.use('/api', limiter);
 
 // Body parser, reading data from body into req.body
 // Accept only the payload with less than 10KB
-app.use(express.json({
-  limit: '10kb'
-}));
+app.use(
+  express.json({
+    limit: '10kb',
+  })
+);
 
 // Data sanitization against NoSQL query injection
 app.use(mongoSanitize());
@@ -50,14 +53,15 @@ app.use(xss());
 // Prevent parameter pollution
 app.use(
   hpp({
-    whitelist: [ // Allow duplicates in query string for below params
+    whitelist: [
+      // Allow duplicates in query string for below params
       'duration',
       'ratingsQuantity',
       'ratingsAverage',
       'maxGroupSize',
       'difficulty',
-      'price'
-    ]
+      'price',
+    ],
   })
 );
 
@@ -67,6 +71,7 @@ app.use(express.static(`${__dirname}/public`));
 // Routes
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/tours', tourRouter);
+app.use('/api/v1/reviews', reviewsRouter);
 
 // When none of the routes match, throw 404
 app.all('*', (req, res, next) => {
