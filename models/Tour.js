@@ -119,6 +119,12 @@ const tourSchema = new mongoose.Schema(
   }
 );
 
+// Documents will be retrieved by refering below fields as indexes
+// Useful for performance
+// 1 - asc; -1 - desc
+tourSchema.index({ price: 1, ratingsAverage: -1 });
+tourSchema.index({ slug: 1 });
+
 // Virtual properties are not part of DB
 // So we cannot query it anywhere
 tourSchema.virtual('durationWeeks').get(function () {
