@@ -18,6 +18,7 @@ router.get('/me', userController.getMe, userController.getUser);
 router.patch('/updateMe', userController.updateMe);
 router.delete('/deleteMe', userController.deleteMe);
 
+// The below routes are available only to admin
 router.use(authController.restrictTo('admin'));
 
 router
