@@ -34,6 +34,10 @@ const reviewSchema = new mongoose.Schema(
   }
 );
 
+// This will ensure that the tour and user combination are unique.
+// Single user cannot be on the same tour more than once
+reviewSchema.index({ tour: 1, user: 1 }, { unique: true });
+
 // QUERY MIDDLEWARE
 // Any queries that start with find, below middleware will be called,
 // Populate the user's name and photo data in the tour model
