@@ -124,6 +124,7 @@ const tourSchema = new mongoose.Schema(
 // 1 - asc; -1 - desc
 tourSchema.index({ price: 1, ratingsAverage: -1 });
 tourSchema.index({ slug: 1 });
+tourSchema.index({ startLocation: '2dsphere' });
 
 // Virtual properties are not part of DB
 // So we cannot query it anywhere
